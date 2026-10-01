@@ -4,7 +4,12 @@
 
 Qi Lyu, Jiahua Dong, Hao Shen, Xudong Wang, Hongyuan Yu, Baichen Liu, Henghui Ding, Zhi Han, Nicu Sebe, Ivan Laptev, Fahad Shahbaz Khan, and Salman Khan
 
+[![arXiv](https://img.shields.io/badge/arXiv-2609.40219-b31b1b.svg)](https://arxiv.org/abs/2609.40219)
 [![Hugging Face Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-f7c843)](https://huggingface.co/OKayQi/AED)
+
+## 📰 News
+
+- **2026-10-01**: We released the code and model weights.
 
 <table>
 <tr>
@@ -23,7 +28,7 @@ Qi Lyu, Jiahua Dong, Hao Shen, Xudong Wang, Hongyuan Yu, Baichen Liu, Henghui Di
 </tr>
 </table>
 
-## Environment setup
+## 🛠️ Environment setup
 
 ```bash
 conda create -n aed python=3.10 -y
@@ -42,7 +47,7 @@ export DIFFSYNTH_MODEL_BASE_PATH="$(pwd)/checkpoints"
 
 Install the official [LIBERO](https://github.com/Lifelong-Robot-Learning/LIBERO) or [RoboTwin](https://github.com/RoboTwin-Platform/RoboTwin) environment separately, including simulator assets.
 
-## Model preparation
+## 📦 Model preparation
 
 Generate the ActionDiT action backbone once:
 
@@ -73,7 +78,7 @@ torchrun --standalone --nproc_per_node=8 scripts/precompute_text_embeds.py \
   task=libero_aed_wam_vae_memory_2cam224_1e-4
 ```
 
-## Data preparation
+## 📂 Data preparation
 
 ### LIBERO
 
@@ -120,7 +125,7 @@ data/robotwin2.0/robotwin2.0/
 └── videos/
 ```
 
-## Training
+## 🚀 Training
 
 Before the first run, set `pretrained_norm_stats: null` in the selected data configuration. After the first run, point it to the generated `dataset_stats.json` for resumed or reproducible training.
 
@@ -136,7 +141,7 @@ bash scripts/train_zero1.sh 8 \
 
 The first argument is the number of processes. Adjust it to the GPUs available on one node. Use a tmux session for long runs and keep the run directory containing checkpoints, logs, resolved configuration, and dataset statistics.
 
-## Hugging Face checkpoints
+## 🤗 Hugging Face checkpoints
 
 The AED checkpoints use the [OKayQi/AED](https://huggingface.co/OKayQi/AED) model repository. Install the Hugging Face Hub client and log in before uploading or downloading files:
 
@@ -163,7 +168,7 @@ hf download OKayQi/AED \
   --local-dir checkpoints
 ```
 
-## Testing released checkpoints
+## 🧪 Testing released checkpoints
 
 ### LIBERO 42K
 
@@ -196,7 +201,7 @@ ln -sfn "$(pwd)/experiments/robotwin/wam_policy" \
 
 Set `EVALUATION.instruction_type=seen` to evaluate seen instructions; the default evaluation uses unseen instructions.
 
-## Demonstrations and supplementary videos
+## 🎬 Demonstrations and supplementary videos
 
 ### Real-world demonstrations
 
@@ -382,3 +387,17 @@ Three representative videos are shown for each simulation family.
 </td>
 </tr>
 </table>
+
+## 📝 Cite
+
+```bibtex
+@misc{lyu2026learningskillshistoricalaction,
+      title={Learning Skills from Historical Action Trajectories: Action Experience Dictionary for World Action Models},
+      author={Qi Lyu and Jiahua Dong and Hao Shen and Xudong Wang and Hongyuan Yu and Baichen Liu and Henghui Ding and Zhi Han and Nicu Sebe and Ivan Laptev and Fahad Shahbaz Khan and Salman Khan},
+      year={2026},
+      eprint={2609.40219},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2609.40219},
+}
+```
