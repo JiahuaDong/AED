@@ -392,13 +392,10 @@ Three representative videos are shown for each simulation family.
 ## 📝 Cite
 
 ```bibtex
-@misc{lyu2026learningskillshistoricalaction,
+@article{lyu2026AED,
       title={Learning Skills from Historical Action Trajectories: Action Experience Dictionary for World Action Models},
       author={Qi Lyu and Jiahua Dong and Hao Shen and Xudong Wang and Hongyuan Yu and Baichen Liu and Henghui Ding and Zhi Han and Nicu Sebe and Ivan Laptev and Fahad Shahbaz Khan and Salman Khan},
       year={2026},
-      eprint={2609.40219},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2609.40219},
+      journal={arXiv preprint arXiv:2609.40219}
 }
 ```
