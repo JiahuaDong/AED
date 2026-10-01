@@ -1,0 +1,70 @@
+# @package _global_
+
+defaults:
+  - _self_
+  - data: null
+  - model: null
+  - task: null
+
+
+output_dir: ./runs/train/${now:%Y-%m-%d}_${now:%H-%M-%S}
+
+# dataloading
+batch_size: 2
+num_workers: 4
+dataloader_persistent_workers: true
+dataloader_prefetch_factor: 2
+dataloader_drop_last: false
+
+# scheduler
+lr_scheduler_type: "cosine"
+learning_rate: 1.0e-4
+num_epochs: 1
+max_steps: null
+log_every: 10
+save_every: 100
+save_at_steps: []
+save_final: true
+save_training_state: true
+max_training_state_checkpoints: null
+eval_every: 50
+eval_num_inference_steps: 10
+
+# training
+gradient_accumulation_steps: 1
+mixed_precision: "bf16" # one of: [no, fp16, bf16]
+seed: 42
+max_grad_norm: 1.0
+weight_decay: 0.0
+resume: null
+
+# wandb
+wandb:
+  enabled: false
+  workspace: lyuqi1024-chinese-academy-of-sciences
+  project: wam
+  id: null
+  resume: allow
+  name: train
+  group: null
+  mode: online
+
+# MLflow uses an independent run UUID. Pass mlflow.run_id explicitly only when
+# resuming the same training run; weight warm-starts should create a new run.
+mlflow:
+  enabled: false
+  tracking_uri: http://127.0.0.1:5050
+  experiment_name: wam-libero
+  run_name: train
+  run_id: null
+  synchronous: true
+  log_config_artifact: true
+  tags:
+    project: wam
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: .
+  output_subdir: null

@@ -1,0 +1,24 @@
+defaults:
+  - aed_wam
+  - _self_
+
+# Online VAE history latents -> all spatiotemporal patches -> fixed learned memory.
+# The DINO cache remains available only for the feature-prediction target.
+history:
+  visual_token_source: vae_memory
+  visual_memory:
+    num_queries: 128
+    num_layers: 2
+    num_heads: 8
+    ffn_dim: 4096
+    max_frames: 33
+    include_current: true
+    eps: 1.0e-06
+  action_preprocess:
+    mode: sum_by_video_frame
+    action_type: absolute
+    sum_group_size: ${data.train.action_video_freq_ratio}
+    gripper_indices: auto
+    one_token_per_group: true
+    max_groups: 32
+  use_gradient_checkpointing: ${model.mot_checkpoint_mixed_attn}

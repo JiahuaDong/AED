@@ -1,0 +1,188 @@
+_target_: wam.models.wan22.action_experience_wam.create_aed_wam
+model_id: Wan-AI/Wan2.2-TI2V-5B
+tokenizer_model_id: Wan-AI/Wan2.1-T2V-1.3B
+tokenizer_max_len: 128
+load_text_encoder: false
+proprio_dim: ${data.train.processor.proprio_output_dim}
+redirect_common_files: true
+mot_checkpoint_mixed_attn: true
+action_dit_pretrained_path: checkpoints/ActionDiT_linear_interp_Wan22_alphascale_1024hdim.pt
+skip_dit_load_from_pretrain: false
+
+video_dit_config:
+  has_image_input: false
+  patch_size: [1, 2, 2]
+  in_dim: 48
+  hidden_dim: 3072
+  ffn_dim: 14336
+  freq_dim: 256
+  text_dim: 4096
+  out_dim: 48
+  num_heads: 24
+  attn_head_dim: 128
+  num_layers: 30
+  eps: 1.0e-06
+  seperated_timestep: true
+  require_clip_embedding: false
+  require_vae_embedding: false
+  fuse_vae_embedding_in_latents: true
+  use_gradient_checkpointing: ${model.mot_checkpoint_mixed_attn}
+  video_attention_mask_mode: "first_frame_causal"
+  action_conditioned: false
+  action_dim: ${data.train.processor.action_output_dim}
+  action_group_causal_mask_mode: "group_diagonal"
+
+action_dit_config:
+  action_dim: ${data.train.processor.action_output_dim}
+  hidden_dim: 1024
+  ffn_dim: 4096
+  num_heads: 24
+  attn_head_dim: 128
+  num_layers: 30
+  text_dim: 4096
+  freq_dim: 256
+  eps: 1.0e-06
+  use_gradient_checkpointing: ${model.mot_checkpoint_mixed_attn}
+
+history:
+  fast_tokenizer_path: third_party/fast_plus_tokenizer
+  history_frames: 8
+  history_action_horizon: null
+  fast_max_tokens: 32
+  projector_mlp_ratio: 2.0
+  block_mlp_ratio: 4.0
+  manager:
+    enabled: false
+    type: identity
+  prefix_attend_current_action: false
+  # Applied identically after history-prefix construction in training and inference.
+  prefix_scale: 1.0
+  # vae/dino: one history feature frame; *_memory: all history patches compressed to fixed memory.
+  visual_token_source: vae
+  dino_history_frame: current
+  visual_memory:
+    num_queries: 128
+    num_layers: 2
+    num_heads: 8
+    ffn_dim: 4096
+    max_frames: 33
+    include_current: true
+    eps: 1.0e-06
+    # Inference/training ablation only. Zero-based blocks are bypassed, not zeroed.
+    skip_block_indices: []
+    # Optional inference intervention: preserve the slot mean and retain the
+    # leading k centered SVD directions. Null leaves checkpoint behavior unchanged.
+    svd_rank: null
+    # Optional zero-based block index whose cross-attention reads task text
+    # embeddings instead of visual patches. Null preserves legacy checkpoints.
+    text_cross_attention_block_index: null
+    # Raise an error when checkpoint and runtime Memory architectures differ.
+    # Set to true only when warm-starting from a different architecture.
+    allow_checkpoint_architecture_mismatch: false
+  action_preprocess:
+    mode: none
+    # absolute: take the last command in each group; relative: sum increments and integrate from window start state.
+    action_type: absolute
+    # Independent history-action aggregation window; do not couple this to action_video_freq_ratio.
+    sum_group_size: 4
+    gripper_indices: auto
+    one_token_per_group: false
+    max_groups: 64
+    random_tail_lengths: [4, 8, 12, 16, 24, 32]
+    random_tail_eval: false
+    random_tail_align_video_start: false
+    random_tail_video_frame_ratio: auto
+  eps: 1.0e-06
+
+aed:
+  enabled: true
+  # Ablation-only: retain the SET/memory architecture and distributed graph
+  # when lambda_mt is zero. The historical default remains false.
+  enable_without_loss: false
+  feature_hidden_dim: 1024
+  feature_dim: 1024
+  feature_ffn_dim: 4096
+  prediction_mode: serial
+  serial_num_layers: 3
+  serial_num_heads: 8
+  serial_max_feature_tokens: 2048
+  serial_max_action_tokens: 1024
+  serial_action_projector_mlp_ratio: 2.0
+  serial_add_feature_pos: true
+  serial_add_action_pos: true
+  use_history_prefix: true
+  detach_history_prefix: false
+  feature_attend_history_prefix: false
+  # delta: predict frozen-target(end) - frozen-target(start); set to future to restore direct target prediction.
+  feature_prediction_target: delta
+  # random: random start/span; fixed_final: current frame -> final future frame with all current actions.
+  feature_sampling_mode: random
+  min_action_span: 1
+  max_action_span: 32
+  # normalized_mse preserves legacy checkpoints; hwel_diagonal uses a fixed
+  # profile, while hwel_diagonal_batch estimates target geometry per batch and
+  # can train online without a feature cache.
+  feature_loss_type: normalized_mse
+  normalize_target: true
+  cosine_weight: 0.0
+  hwel:
+    # Required for hwel_diagonal training. Checkpoints also embed the fixed
+    # profile tensors, so resumed training keeps the same geometry.
+    profile_path: null
+    # Used by hwel_diagonal_batch to construct target-only online geometry.
+    # The no-change normalization remains one for every batch.
+    ridge_relative: 1.0e-6
+    ridge_absolute: 1.0e-12
+  eps: 1.0e-06
+  target:
+    # Both released checkpoints (LIBERO step 42K, RoboTwin step 50K) embed
+    # this LingBot-Vision target signature. Override the path with LINGBOT_VISION_PATH.
+    type: frozen_lingbot_vision
+    source: modelscope
+    model_id: Robbyant/lingbot-vision-vit-base
+    local_path: ${oc.env:LINGBOT_VISION_PATH,./artifacts/pretrained_lingbot_vision/Robbyant/lingbot-vision-vit-base}
+    cache_dir: null
+    image_size: 224
+    input_range: minus_one_one
+    token_mode: patch
+    pool: patch_mean
+    projection_seed: 0
+    variant: base
+
+action_psd:
+  transform: dct
+  distance: sqrt
+  sample_period_frames: 1
+  exclude_dc: true
+  energy_mask: true
+  energy_mask_abs_floor: 1.0e-8
+  energy_mask_rel_floor: 1.0e-3
+  arm_mode: auto
+  arm_dim: 7
+  eps: 1.0e-8
+
+semantic_alignment:
+  enabled: false
+  num_queries: 1
+  target_context: task
+  fallback_to_prompt: true
+  projector_mlp_ratio: 1.0
+  normalize_target: false
+
+video_scheduler:
+  train_shift: 5.0
+  infer_shift: 5.0
+  num_train_timesteps: 1000
+
+action_scheduler:
+  train_shift: 5.0
+  infer_shift: 5.0
+  num_train_timesteps: 1000
+
+loss:
+  lambda_action: 1.0
+  lambda_action_psd: 0.0
+  lambda_semantic_alignment: 0.0
+  lambda_mt: 0.01
+  # Compatibility alias for older launch scripts; the factory prefers lambda_mt.
+  lambda_set: ${.lambda_mt}

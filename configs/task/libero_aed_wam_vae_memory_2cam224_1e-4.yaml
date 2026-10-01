@@ -1,0 +1,49 @@
+# @package _global_
+
+defaults:
+  - override /data: history_libero_hf_2cam
+  - override /model: aed_wam_vae_memory
+  - _self_
+
+# Four GPUs with batch=8 and accumulation=2 give an effective batch of 64.
+batch_size: 8
+num_workers: 8
+gradient_accumulation_steps: 2
+
+learning_rate: 1.0e-4
+lr_scheduler_type: cosine
+weight_decay: 1.0e-2
+num_epochs: 10
+max_steps: null
+log_every: 10
+save_every: 2000
+eval_every: 200
+
+model:
+  mot_checkpoint_mixed_attn: true
+  history:
+    history_frames: 8
+    history_action_horizon: 32
+    visual_token_source: vae_memory
+    visual_memory:
+      num_queries: 128
+      include_current: true
+    action_preprocess:
+      mode: sum_by_video_frame
+      action_type: mixed
+      sum_group_size: ${data.train.action_video_freq_ratio}
+      relative_dim_mask: [true, true, true, true, true, true, false]
+      one_token_per_group: true
+      max_groups: 32
+  aed:
+    enabled: true
+    feature_prediction_target: delta
+    feature_sampling_mode: random
+    min_action_span: 1
+    max_action_span: 32
+  loss:
+    lambda_action: 1.0
+    lambda_action_psd: 0.0
+    lambda_semantic_alignment: 0.0
+    lambda_set: ${.lambda_mt}
+    lambda_mt: 0.003
