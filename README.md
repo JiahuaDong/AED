@@ -1,6 +1,5 @@
-# AED
 
-## Learning Skills from Historical Action Trajectories: Action Experience Dictionary for World Action Models
+# Learning Skills from Historical Action Trajectories: Action Experience Dictionary for World Action Models
 
 Qi Lyu*, Jiahua Dong*, Hao Shen, Xudong Wang, Hongyuan Yu, Baichen Liu, Henghui Ding, Zhi Han, Nicu Sebe, Ivan Laptev, Fahad Shahbaz Khan, and Salman Khan
 
