@@ -2,7 +2,9 @@
 
 ## Action Experience Dictionary for World Action Models
 
-Qi Lyu, Jiahua Dong, Hao Shen, Xudong Wang, Hongyuan Yu, Baichen Liu, Henghui Ding, Zhi Han, Nicu Sebe, Ivan Laptev, Fahad Shahbaz Khan, and Salman Khan
+Qi Lyu*, Jiahua Dong*, Hao Shen, Xudong Wang, Hongyuan Yu, Baichen Liu, Henghui Ding, Zhi Han, Nicu Sebe, Ivan Laptev, Fahad Shahbaz Khan, and Salman Khan
+
+*Equal Contributions
 
 [![arXiv](https://img.shields.io/badge/arXiv-2609.40219-b31b1b.svg)](https://arxiv.org/abs/2609.40219)
 [![Hugging Face Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-f7c843)](https://huggingface.co/OKayQi/AED)
