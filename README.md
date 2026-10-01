@@ -7,10 +7,6 @@ Qi Lyu, Jiahua Dong, Hao Shen, Xudong Wang, Hongyuan Yu, Baichen Liu, Henghui Di
 [![arXiv](https://img.shields.io/badge/arXiv-2609.40219-b31b1b.svg)](https://arxiv.org/abs/2609.40219)
 [![Hugging Face Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-f7c843)](https://huggingface.co/OKayQi/AED)
 
-## 📰 News
-
-- **2026-10-01**: We released the code and model weights.
-
 <table>
 <tr>
 <td align="center">
@@ -27,6 +23,10 @@ Qi Lyu, Jiahua Dong, Hao Shen, Xudong Wang, Hongyuan Yu, Baichen Liu, Henghui Di
 </td>
 </tr>
 </table>
+
+## 📰 News
+
+- **2026-10-01**: We released the code and model weights.
 
 ## 🛠️ Environment setup
 
